@@ -16,3 +16,4 @@ output-vmware-iso
 packer_cache
 packer-bosh
 pkg
+terraform/environment.sh

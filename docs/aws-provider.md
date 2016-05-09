@@ -11,6 +11,9 @@
     Known working version: 0.4.1
 
 1. If you don't already have one, create an AWS Access Key. Set environment variables `BOSH_AWS_ACCESS_KEY_ID` and `BOSH_AWS_SECRET_ACCESS_KEY`.
+
+1.(optional) Install Terraform: https://www.terraform.io/
+
 1. Create an SSH key pair so that you can SSH into Bosh Lite once it is deployed. If you generate an EC2 Key Pair in AWS the private key will be downloaded. Call the EC2 Key Pair `bosh` or set the environment variable `BOSH_LITE_KEYPAIR` to the name you gave. Set `BOSH_LITE_PRIVATE_KEY` to the local file path for the private key (defaults to `~/.ssh/id_rsa_bosh`).
 
 Set the environment variables:
@@ -23,12 +26,21 @@ $ export BOSH_LITE_PRIVATE_KEY=
 
 ### Additional Prerequisites for VPC
 
-1. If you don't already have one, create a VPC. If you use the VPC Wizard, a Security Group and a Subnet will be created for you. If you create the VPC manually a Security Group will be created automatically but you must manually create a Subnet.
-1. Set the environment variable `BOSH_LITE_SECURITY_GROUP` to the Group ID (e.g. `sg-62166d1a`) of a Security Group associated with the VPC. Note: this is different from [EC2-Classic](#additional-prerequisites-for-ec2-classic), where the Group Name is used.
-1. By default Security Groups only allow access from within the Security Group. Modify the Security Group to allow inbound traffic from anywhere (set Source to `0.0.0.0/0`).
-  - If you want to lock down access, set Source to your IP address. You can also limit what ports are opened; BOSH Lite requires inbound traffic on ports 25555 (for the BOSH director), 22 (for SSH), 80/443 (for Cloud Controller), and 4443 (for Loggregator).
-1. If you don't already have one, create a Subnet. Set the environment variable `BOSH_LITE_SUBNET_ID` to the Subnet ID (e.g. `subnet-37d0526f`).
-1. By default, VMs will not be assigned a public IP on creation. Modify the Subnet to Enable auto-assign Public IP.
+1. Create the VPC, Security Group, and Subnet:
+```
+cd terraform
+terraform plan
+terraform apply
+```
+1. Set the environment variable `BOSH_LITE_SECURITY_GROUP` to the Group ID (e.g. `sg-62166d1a`) of a Security Group associated with the VPC. Note: this is different from [EC2-Classic](#additional-prerequisites-for-ec2-classic), where the Group Name is used. Terraform will output the Group ID.
+1. By default Security Groups only allow access from within the Security Group. Modify the Security Group to allow inbound traffic from anywhere (set Source to `0.0.0.0/0`). Terraform sets this up.
+  - If you want to lock down access, set Source to your IP address. You can also limit what ports are opened; BOSH Lite requires inbound traffic on ports 25555 (for the BOSH director), 22 (for SSH), 80/443 (for Cloud Controller), and 4443 (for Loggregator). Terraform sets this up (the example is set up for 22, 80, 443 - add as needed).
+1. If you don't already have one, create a Subnet. Set the environment variable `BOSH_LITE_SUBNET_ID` to the Subnet ID (e.g. `subnet-37d0526f`). Terraform will output the  Subnet ID.
+1. By default, VMs will not be assigned a public IP on creation. Modify the Subnet to Enable auto-assign Public IP. Terraform sets this up.
+1. If you filled the values in to environment.sh, then source it:
+```
+source environment.sh
+````
 1. Continue to [Deploy BOSH Lite](#deploy-bosh-lite).
 
 ### Additional Prerequisites for EC2 Classic
