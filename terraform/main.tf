@@ -75,12 +75,33 @@ resource "aws_key_pair" "auth" {
   public_key = "${file(var.public_key_path)}"
 }
 
-output "aws_subnet.default.id" {
-        value = "${aws_subnet.default.id}"
+resource "aws_instance" "bosh" {
+  # The connection block tells our provisioner how to
+  # communicate with the resource (instance)
+  connection {
+    # The default username for our AMI
+    user = "ubuntu"
+
+    # The connection will use the local SSH agent for authentication.
+  }
+
+  instance_type = "m3.xlarge"
+
+  # Lookup the correct AMI based on the region
+  # we specified
+  ami = "${lookup(var.aws_amis, var.aws_region)}"
+
+  # The name of our SSH keypair we created above.
+  key_name = "${aws_key_pair.auth.id}"
+
+  # Our Security group to allow HTTP and SSH access
+  vpc_security_group_ids = ["${aws_security_group.default.id}"]
+
+  subnet_id = "${aws_subnet.default.id}"
+
 }
 
-
-output "aws_security_group.default.id" {
-        value = "${aws_security_group.default.id}"
+output "aws_instance.bosh.public_ip" {
+        value = "${aws_instance.bosh.public_ip}"
 }
 

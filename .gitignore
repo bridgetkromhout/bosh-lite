@@ -17,3 +17,4 @@ packer_cache
 packer-bosh
 pkg
 terraform/environment.sh
+terraform/terraform.tfstate*

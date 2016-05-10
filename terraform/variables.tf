@@ -17,9 +17,9 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
-# Ubuntu Trusty 14.04 LTS
+# bosh-lite AMI
 variable "aws_amis" {
   default = {
-    us-east-1 = "ami-2b594f41"
+    us-east-1 = "ami-6a15f807"
   }
 }
